@@ -1,7 +1,8 @@
 pipeline {
     agent any
     tools {
-        maven "MAVEN" // Make sure "MAVEN" matches the configured Maven installation name
+        // Dynamically select the Maven tool based on its label
+        maven "maven" // "maven" should match the label of your Maven installation in Jenkins
     }
     environment {
         NEXUS_VERSION = "nexus3"
