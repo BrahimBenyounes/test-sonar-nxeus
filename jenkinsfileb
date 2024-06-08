@@ -1,39 +1,14 @@
-pipeline {
-    agent any
-
-    tools {
-        // Define the correct JDK tool name configured in Jenkins
-        jdk 'Your_JDK_Tool_Name' // Replace with the actual JDK tool name in Jenkins
-        sonarQube 'SonarQube' // Ensure this matches the SonarQube tool name configured in Jenkins
-    }
-
-    stages {
-        stage('Checkout SCM') {
+     pipeline {
+        agent none
+        stages {
+         
+          stage("build & sonarqube") {
+            agent any
             steps {
-                // Checkout the source code from SCM
-                checkout scm
+              withSonarQubeEnv('Sonarqube') {
+                sh 'mvn clean package sonar:sonar'
+              }
             }
+          }
         }
-
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool name: 'SonarQube', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    def javaHome = tool name: 'Your_JDK_Tool_Name', type: 'hudson.model.JDK'
-
-                    withEnv(["JAVA_HOME=${javaHome}", "SONAR_HOST_URL=http://192.168.186.129:9000"]) {
-                        withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' matches the server configuration name
-                            sh """
-                                ${scannerHome}/bin/sonar-scanner \
-                                -Dsonar.login=admin \
-                                -Dsonar.password=00000000admin \
-                                -Dsonar.projectKey=1st_Sonar \
-                                -Dsonar.java.binaries=target/classes
-                            """
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+      }
