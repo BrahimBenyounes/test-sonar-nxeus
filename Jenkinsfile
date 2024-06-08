@@ -1,50 +1,23 @@
 pipeline {
     agent any
-    tools {
-        // Dynamically select the Maven tool based on its label
-        maven "maven" // "maven" should match the label of your Maven installation in Jenkins
-    }
+
     environment {
-        NEXUS_VERSION = "nexus3"
-        NEXUS_PROTOCOL = "http"
-        NEXUS_URL = "192.168.186.129:8081"
-        NEXUS_REPOSITORY = "maven-central-repository"
-        NEXUS_CREDENTIAL_ID = "nexus"
+        // Define the path to Maven executable
+        MAVEN_HOME = tool 'maven'
     }
+
     stages {
-        stage("Publish to Nexus Repository Manager") {
+        stage('Build') {
             steps {
-                script {
-                    pom = readMavenPom file: "pom.xml";
-                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
-                    echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
-                    artifactPath = filesByGlob[0].path;
-                    artifactExists = fileExists artifactPath;
-                    if(artifactExists) {
-                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
-                        nexusArtifactUploader(
-                            nexusVersion: 'nexus3',
-                            protocol: 'http',
-                            nexusUrl: '192.168.186.129:8081',
-                            groupId: 'pom.com.tn.esprit.rh',
-                            version: pom.version,
-                            repository: 'maven-central-repository',
-                            credentialsId: 'nexus',
-                            artifacts: [
-                                [artifactId: pom.achat,
-                                classifier: '',
-                                file: artifactPath,
-                                type: pom.packaging],
-                                [artifactId: pom.achat,
-                                classifier: '',
-                                file: "pom.xml",
-                                type: "pom"]
-                            ]
-                        );
-                    } else {
-                        error "*** File: ${artifactPath}, could not be found";
-                    }
-                }
+                // Clean and package the Maven project
+                sh "${MAVEN_HOME}/bin/mvn clean package"
+            }
+        }
+
+        stage('Deploy to Nexus') {
+            steps {
+                // Deploy the artifact to Nexus repository
+                sh "${MAVEN_HOME}/bin/mvn deploy"
             }
         }
     }
