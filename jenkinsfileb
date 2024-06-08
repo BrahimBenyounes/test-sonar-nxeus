@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     tools {
-        // Define the tools
-        jdk 'JAVA_HOME' // Ensure 'JAVA_HOME' matches the name in Jenkins
-        sonarQube 'SonarQube' // Ensure 'SonarQube' matches the name in Jenkins
+        // Define the correct JDK tool name configured in Jenkins
+        jdk 'Your_JDK_Tool_Name' // Replace with the actual JDK tool name in Jenkins
+        sonarQube 'SonarQube' // Ensure this matches the SonarQube tool name configured in Jenkins
     }
 
     stages {
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     def scannerHome = tool name: 'SonarQube', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    def javaHome = tool name: 'JAVA_HOME', type: 'hudson.model.JDK'
+                    def javaHome = tool name: 'Your_JDK_Tool_Name', type: 'hudson.model.JDK'
 
                     withEnv(["JAVA_HOME=${javaHome}", "SONAR_HOST_URL=http://192.168.186.129:9000"]) {
                         withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' matches the server configuration name
