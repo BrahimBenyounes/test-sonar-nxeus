@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        maven "MAVEN"
+        maven "MAVEN" // Make sure "MAVEN" matches the configured Maven installation name
     }
     environment {
         NEXUS_VERSION = "nexus3"
@@ -11,8 +11,6 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "nexus"
     }
     stages {
-      
- 
         stage("Publish to Nexus Repository Manager") {
             steps {
                 script {
