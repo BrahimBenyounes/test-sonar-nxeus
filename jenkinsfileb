@@ -1,1 +1,41 @@
+pipeline {
+    agent any
+
+
+    stages {
+
+   
+
+     
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool name: 'SonarQube', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    def javaHome = tool name: 'JAVA_HOME', type: 'hudson.model.JDK'
+
+                    withEnv(["JAVA_HOME=${javaHome}", "SONAR_HOST_URL=http://192.168.186.129:9000"]) {
+                        withSonarQubeEnv('Sonarqube') {
+                            sh """
+                                ${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.login=admin \
+                                -Dsonar.password=00000000admin \
+                                -Dsonar.projectKey=1st_Sonar \
+                                -Dsonar.java.binaries=target/classes
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+    
+
+     
+     
+
+      
+      
+    }
+}
 
